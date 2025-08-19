@@ -1,37 +1,45 @@
 stages:
   data_ingesion:
     cmd: python src/data_ingesion.py
-    deps: 
+    deps:
     - src/data_ingesion.py
     outs:
     - data/raw
   pre_processing:
-    cmd : python src/pre_processing.py
-    deps: 
+    cmd: python src/pre_processing.py
+    deps:
     - data/raw
     - src/pre_processing.py
     outs:
     - data/split_raw_data
   feature_engineering:
     cmd: python src/feature_engineering.py
-    deps: 
+    deps:
     - data/split_raw_data
     - src/feature_engineering.py
     outs:
     - data/processed_data
   model_training:
     cmd: python src/model_training.py
-    deps: 
+    deps:
     - data/processed_data
     - src/model_training.py
     outs:
     - models/model.pkl
   evaluating_model:
     cmd: python src/evaluating_model.py
-    deps: 
+    deps:
+    - data/processed_data
     - models/model.pkl
     - src/evaluating_model.py
     outs:
     - reports/metrics.json
 
-    
+params:
+- params.yaml
+- dvclive/params.yaml
+metrics:
+- dvclive/metrics.json
+plots:
+- dvclive/plots/metrics:
+    x: step

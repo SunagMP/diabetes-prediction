@@ -1,9 +1,12 @@
 import pickle
 from sklearn.metrics import classification_report
+from sklearn.metrics import accuracy_score, precision_score, recall_score
 import logging 
 import os
 import pandas as pd
 import json
+import yaml
+from dvclive import Live
 
 # ---------------------------------------------- logging -----------------------------------
 import logging
@@ -27,7 +30,18 @@ file_handler.setFormatter(formate)
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
-# ------------------------------ testing and evaluating the data -------------------------
+# --------------------------------- yaml : load params ---------
+def load_params(params_path):
+    try:
+        with open(params_path, 'r') as f:
+            params = yaml.safe_load(f)
+        logger.debug("loadded params")
+        return params
+    except Exception as e:
+        logger.error("failed to load due to %s", e)
+        raise
+
+# ------------------------------ testing and evaluating the data ------------------------ 
 def test_trained_model(model, x_test: pd.DataFrame):
     try:
         y_pred = model.predict(x_test)
@@ -39,7 +53,7 @@ def test_trained_model(model, x_test: pd.DataFrame):
 
 def evaluate_the_model(y_test, y_pred):
     try:
-        test_result = classification_report(y_test, y_pred)
+        test_result = classification_report(y_test, y_pred, output_dict=True)
         logger.debug("model tested against the test data")
         logger.info("the test result :\n %s", test_result)
         return test_result
@@ -59,6 +73,7 @@ def save_report(test_result):
 
 def main():
     try:
+        params = load_params('params.yaml')
         test_df = pd.read_csv('data/processed_data/processed_test_data.csv')
         X_test = test_df.drop(columns=['Outcome'])
         y_test = test_df['Outcome']
@@ -68,6 +83,14 @@ def main():
 
         y_pred = test_trained_model(trained_model, X_test)
         test_result = evaluate_the_model(y_test, y_pred)
+
+        #--------------------- experiment tracking with Dvc live --------------
+        with Live(save_dvc_exp=True) as live:
+            live.log_metric("accuracy", accuracy_score(y_test, y_pred))
+            live.log_metric("precision", precision_score(y_test, y_pred))
+            live.log_metric("recall", recall_score(y_test, y_pred))
+            live.log_params(params)
+            
         save_report(test_result)
         logger.info("Model evaluation successful")
 

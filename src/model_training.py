@@ -37,7 +37,7 @@ def train_model(x_train:pd.DataFrame, y_train:pd.DataFrame):
 
 def save_trained_model(trained_model):
     try:
-        os.makedirs('models', exist_ok=True)   # only create directory
+        os.makedirs('models', exist_ok=True)   # only create directory 
         with open('models/model.pkl', 'wb') as f:
             pickle.dump(trained_model, f)      # direct pickle dump
         logger.debug("trained model saved successfully")
