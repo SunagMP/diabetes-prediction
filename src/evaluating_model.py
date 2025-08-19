@@ -41,6 +41,7 @@ def evaluate_the_model(y_test, y_pred):
     try:
         test_result = classification_report(y_test, y_pred)
         logger.debug("model tested against the test data")
+        logger.info("the test result :\n %s", test_result)
         return test_result
     except Exception as e:
         logger.error("failed to evaluate, %s", e)

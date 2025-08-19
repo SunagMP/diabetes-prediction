@@ -23,8 +23,8 @@ stages:
       nfiles: 1
     - path: src/pre_processing.py
       hash: md5
-      md5: 0757ae741e228f7f252d9270f37e131b
-      size: 1940
+      md5: e543caf6f1882fb8e21d7e136368c516
+      size: 2520
     outs:
     - path: data/split_raw_data
       hash: md5
@@ -75,8 +75,8 @@ stages:
       size: 3638575
     - path: src/evaluating_model.py
       hash: md5
-      md5: 3c1beeb834d3d2be895ee114317108d2
-      size: 2433
+      md5: 6e9adc96f4aaf9e39a888e41f4ef413c
+      size: 2493
     outs:
     - path: reports/metrics.json
       hash: md5

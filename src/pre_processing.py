@@ -2,6 +2,7 @@ import pandas as pd
 import os
 from sklearn.model_selection import train_test_split
 
+# ------------------------ logging -------------------------------------
 import logging
 logger = logging.getLogger("pre-processing-logger")
 logger.setLevel('DEBUG')
@@ -23,9 +24,21 @@ file_handler.setFormatter(formate)
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
-def splitData(df:pd.DataFrame):
+# ----------------------------------------- yaml : params reading -----------------
+import yaml
+
+def load_params(params_path:str):
     try:
-        train_data, test_data = train_test_split(df, test_size=0.2, random_state=2)
+        with open(params_path, 'r') as f:
+            params = yaml.safe_load(f)
+        logger.debug("params loaded successful")
+        return params
+    except Exception as e:
+        logger.error("failed due to , %s", e)
+
+def splitData(df:pd.DataFrame, size : int):
+    try:
+        train_data, test_data = train_test_split(df, test_size=size, random_state=2)
         logger.debug("The data split successful")
         return train_data, test_data
     except Exception as e:
@@ -50,8 +63,10 @@ def saveSplitData(train_data:pd.DataFrame, test_data:pd.DataFrame):
 
 def main():
     try:
+        params = load_params('params.yaml')
+        test_size = params['pre_processing']['test_size']
         df = pd.read_csv('data/raw/raw_data.csv')
-        train_data, test_data = splitData(df)
+        train_data, test_data = splitData(df, test_size)
         saveSplitData(train_data, test_data)
     except Exception as e:
         logger.error("failed to split and fail %s", e)
