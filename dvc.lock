@@ -87,3 +87,10 @@ stages:
       hash: md5
       md5: d53be4e2233903b5d130f7f4c385a939
       size: 515
+  fast_api:
+    cmd: uvicorn src.frontend:app --reload
+    deps:
+    - path: models/model.pkl
+      hash: md5
+      md5: d679658ebe5af860fdfe807b1c524f93
+      size: 3697144

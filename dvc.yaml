@@ -34,6 +34,10 @@ stages:
     - src/evaluating_model.py
     outs:
     - reports/metrics.json
+  fast_api:
+    cmd: uvicorn src.frontend:app --reload
+    deps:
+    - models/model.pkl
 
 params:
 - params.yaml
